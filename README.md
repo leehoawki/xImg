@@ -7,16 +7,16 @@
 3. 也可以通过本地运行 mvn spring-boot:run 在本地运行。
 
 ## API
-##### 上传文件
+##### 上传图片
     POST:/upload
     enctype="multipart/form-data"
     data:file=[file]
     
-##### 文件下载
+##### 图片下载
     GET:/view/[id]
 
-##### 文件删除
-    GET:/delete/[id]
+##### 图片处理
+    GET:/view/[id]
 
 ## 管理页面
-通过`admin.html`和`upload.html`可以进行简单的管理操作（上传、查询和删除等）。
+通过`admin.html`可以进行简单的管理操作（上传等）。

@@ -36,7 +36,7 @@ public class xImgController {
     }
 
     @RequestMapping(value = "/view/{id}")
-    public ResponseEntity<byte[]> view(@PathVariable String id, @RequestParam int width, @RequestParam int height) {
+    public ResponseEntity<byte[]> view(@PathVariable String id) {
         byte[] bytes = service.get(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
