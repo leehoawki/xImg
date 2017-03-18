@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Map;
 
 @Service
 @EnableConfigurationProperties(xImgProperties.class)
@@ -33,14 +32,14 @@ public class xImgService {
         } else if (dir.isDirectory()) {
             LOG.info("Base dir already exists, dir=" + dir);
         } else {
-            LOG.error("Base dir is a, dir=" + dir);
+            LOG.error("Base dir is a non-dir file, dir=" + dir);
             throw new IllegalStateException();
         }
     }
 
     public String upload(MultipartFile file) {
-        String id = null;
-        String path = null;
+        String id;
+        String path;
         File dir = null;
         try {
             id = xImgUtils.toId(file.getBytes());
