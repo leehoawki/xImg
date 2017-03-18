@@ -71,4 +71,11 @@ public class xImgService {
         }
     }
 
+    public boolean exists(String id) {
+        if (id.length() != 32) {
+            throw new IllegalArgumentException("Illegal md5 value, id=" + id);
+        }
+        String path = xImgUtils.toPath(id);
+        return new File(base + path).exists();
+    }
 }

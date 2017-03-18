@@ -42,4 +42,9 @@ public class xImgController {
         headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
     }
+
+    @RequestMapping(value = "/exists/{id}")
+    public boolean exists(@PathVariable String id) {
+        return service.exists(id);
+    }
 }
