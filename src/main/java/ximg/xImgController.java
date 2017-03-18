@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,8 +37,10 @@ public class xImgController {
     }
 
     @RequestMapping(value = "/view/{id}")
-    public ResponseEntity<byte[]> view(@PathVariable String id) {
-        byte[] bytes = service.get(id);
+    public ResponseEntity<byte[]> view(@PathVariable String id,
+                                       @RequestParam(required = false, defaultValue = "0") int width,
+                                       @RequestParam(required = false, defaultValue = "0") int height) {
+        byte[] bytes = service.get(id, width, height);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);

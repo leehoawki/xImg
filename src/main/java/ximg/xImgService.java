@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Map;
 
 @Service
 @EnableConfigurationProperties(xImgProperties.class)
@@ -40,30 +41,41 @@ public class xImgService {
     public String upload(MultipartFile file) {
         String id = null;
         String path = null;
+        File dir = null;
         try {
             id = xImgUtils.toId(file.getBytes());
             path = xImgUtils.toPath(id);
-            File dir = new File(base + path);
+            dir = new File(base + path);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
             file.transferTo(new File(base + path + id));
         } catch (IOException e) {
             LOG.error("File uploading failed.", e);
+            if (dir != null) dir.delete();
             throw new IllegalStateException(e);
         }
         LOG.info("File uploaded, id=" + id + ", target=" + file.getOriginalFilename());
         return id;
     }
 
-    public byte[] get(String id) {
-        String path = xImgUtils.toPath(id);
-        File target = new File(base + path + id);
-        if (!target.exists()) {
+    public byte[] get(String id, int width, int height) {
+        String target = base + xImgUtils.toPath(id) + id;
+        File img = new File(target);
+
+        if (!img.exists()) {
             throw new IllegalArgumentException("File does not exist, target=" + target);
         }
+        if (width < 0) width = 0;
+        if (height < 0) height = 0;
+        if (width > 0 || height > 0) {
+            img = new File(target + "_" + width + "_" + height);
+            if (!img.exists()) {
+                xImgUtils.resize(target, img.getAbsolutePath(), width, height);
+            }
+        }
         try {
-            byte[] bytes = Files.readAllBytes(target.toPath());
+            byte[] bytes = Files.readAllBytes(img.toPath());
             return bytes;
         } catch (IOException e) {
             LOG.error("File IO error.", e);
