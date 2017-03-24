@@ -58,7 +58,10 @@ public class xImgService {
         return id;
     }
 
-    public byte[] get(String id, int width, int height) {
+    public File get(String id, int width, int height) {
+        if (id.length() != 32) {
+            throw new IllegalArgumentException("Illegal md5 value, id=" + id);
+        }
         String target = base + xImgUtils.toPath(id) + id;
         File img = new File(target);
 
@@ -73,13 +76,7 @@ public class xImgService {
                 xImgUtils.resize(target, img.getAbsolutePath(), width, height);
             }
         }
-        try {
-            byte[] bytes = Files.readAllBytes(img.toPath());
-            return bytes;
-        } catch (IOException e) {
-            LOG.error("File IO error.", e);
-            throw new IllegalStateException(e);
-        }
+        return img;
     }
 
     public boolean exists(String id) {

@@ -1,17 +1,27 @@
 package ximg;
 
+import org.apache.catalina.WebResource;
+import org.apache.catalina.connector.ResponseFacade;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.coyote.http2.ByteUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.LRUCache;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
 
 @RestController
 public class xImgController {
@@ -36,17 +46,30 @@ public class xImgController {
     }
 
     @RequestMapping(value = "/view/{id}")
-    public ResponseEntity<byte[]> view(@PathVariable String id,
-                                       @RequestParam(required = false, defaultValue = "0") int width,
-                                       @RequestParam(required = false, defaultValue = "0") int height) {
-        byte[] bytes = service.get(id, width, height);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
+    public void view(@PathVariable String id,
+                     @RequestParam(required = false, defaultValue = "0") int width,
+                     @RequestParam(required = false, defaultValue = "0") int height,
+                     HttpServletResponse resp) throws IOException {
+        File file = service.get(id, width, height);
+        resp.setHeader("Content-Type", "image/jpeg");
+        try (FileInputStream fis = new FileInputStream(file)) {
+            copy(fis, resp.getOutputStream());
+        }
     }
 
     @RequestMapping(value = "/exists/{id}")
     public boolean exists(@PathVariable String id) {
         return service.exists(id);
+    }
+
+    void copy(InputStream istream, ServletOutputStream ostream) throws IOException {
+        List<byte[]> cache = new ArrayList<>();
+        byte buffer[] = new byte[2048];
+        int len = istream.read(buffer);
+        while (len > 0) {
+            cache.add(Arrays.copyOfRange(buffer, 0, len));
+            ostream.write(buffer, 0, len);
+            len = istream.read(buffer);
+        }
     }
 }
