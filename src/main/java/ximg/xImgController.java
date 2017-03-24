@@ -63,11 +63,9 @@ public class xImgController {
     }
 
     void copy(InputStream istream, ServletOutputStream ostream) throws IOException {
-        List<byte[]> cache = new ArrayList<>();
         byte buffer[] = new byte[2048];
         int len = istream.read(buffer);
         while (len > 0) {
-            cache.add(Arrays.copyOfRange(buffer, 0, len));
             ostream.write(buffer, 0, len);
             len = istream.read(buffer);
         }
