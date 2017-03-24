@@ -13,7 +13,8 @@
     data:file=[file]
     
 ##### 图片下载
-    GET:/view/[id]
+    GET:/view/[id]?width=[width]&height=[height]
+    可选参数width和height，不输入则维持原状。
 
 ##### 图片查询
     GET:/exists/[id]
