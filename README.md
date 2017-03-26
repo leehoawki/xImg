@@ -12,6 +12,8 @@
     enctype="multipart/form-data"
     data:file=[file]
     
+    这里会返回图片的MD5值作为id，后续查询和访问可以用到。当然很明显客户端也可以通过预算MD5的做法确认图片是否已经上传来实现"秒传"功能。
+   
 ##### 图片下载
     GET:/view/[id]?width=[width]&height=[height]
     可选参数width和height，不输入则维持原状。
